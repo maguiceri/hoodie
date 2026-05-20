@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #080808;
+  --foreground: #ffffff;
 }
 
 @theme inline {
@@ -12,15 +12,95 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  cursor: none;
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+  cursor: none !important;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 3px;
+}
+::-webkit-scrollbar-track {
+  background: #080808;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2a2a;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #444;
+}
+
+/* ── Animations ── */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Nav entrance (CSS — siempre visible, no necesita IntersectionObserver) */
+@keyframes slideFromLeft {
+  from { opacity: 0; transform: translateX(-36px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes slideFromRight {
+  from { opacity: 0; transform: translateX(36px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  10%       { transform: translate(-2%, -3%); }
+  30%       { transform: translate(2%, 2%); }
+  50%       { transform: translate(-1%, 3%); }
+  70%       { transform: translate(3%, -1%); }
+  90%       { transform: translate(-3%, 1%); }
+}
+
+/* ── Responsive layout ── */
+.nav-bar            { padding: 22px 48px; display: flex; justify-content: space-between; align-items: center; }
+.nav-menu           { display: flex; gap: 36px; }
+.product-section    { display: grid; grid-template-columns: 1fr 1fr; padding: 96px 48px; gap: 80px; }
+.collection-section { padding: 80px 48px 96px; }
+.collection-head    { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; }
+.drops-grid         { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.studio-section     { display: flex; align-items: center; justify-content: space-between; gap: 40px; padding: 64px 48px; }
+.studio-wordmark    { flex-shrink: 0; }
+.footer-bar         { padding: 40px 48px; display: flex; justify-content: space-between; align-items: center; }
+
+@media (max-width: 768px) {
+  .nav-bar            { padding: 18px 20px; }
+  .nav-menu           { display: none; }
+  .product-section    { grid-template-columns: 1fr; padding: 56px 20px; gap: 40px; }
+  .collection-section { padding: 56px 20px 64px; }
+  .collection-head    { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .drops-grid         { grid-template-columns: 1fr 1fr; }
+  .studio-section     { flex-direction: column; padding: 48px 20px; }
+  .studio-wordmark    { display: none; }
+  .footer-bar         { flex-direction: column; gap: 20px; padding: 32px 20px; text-align: center; }
+}
+
+@media (max-width: 480px) {
+  .drops-grid { grid-template-columns: 1fr; }
 }
