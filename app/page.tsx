@@ -179,8 +179,8 @@ export default function Home() {
       <div style={{ background: "#080808", minHeight: "100vh", color: "#fff", fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
 
         {/* ── NAV — CSS animation (siempre visible, no observer) ── */}
-        <nav className="nav-bar" style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 200, background: "linear-gradient(to bottom, rgba(8,8,8,0.95) 0%, transparent 100%)" }}>
-          <div style={{ fontSize: 18, fontWeight: 900, letterSpacing: 8, textTransform: "uppercase", animation: "slideFromLeft 0.8s cubic-bezier(0.22,1,0.36,1) 0.1s both" }}>
+        <nav className="nav-pad" style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 200, display: "flex", justifyContent: "space-between", alignItems: "center", background: "linear-gradient(to bottom, rgba(8,8,8,0.95) 0%, transparent 100%)" }}>
+          <div style={{ fontSize: 18, fontWeight: 900, letterSpacing: 8, textTransform: "uppercase", animation: "slideFromLeft 0.8s cubic-bezier(0.22,1,0.36,1) 0.1s both", opacity: 1 }}>
             VOID
           </div>
           <div className="nav-menu" style={{ fontSize: 10, letterSpacing: 4, textTransform: "uppercase", color: "#ffffff45", animation: "slideFromRight 0.8s cubic-bezier(0.22,1,0.36,1) 0.25s both" }}>

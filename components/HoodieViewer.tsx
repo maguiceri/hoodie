@@ -42,32 +42,35 @@ function FrameCapture({ onCapture }: { onCapture: (d: MaskData) => void }) {
     if (++frameCount.current < 3) return;
     captured.current = true;
 
-    const cvs = gl.domElement;
-    const W   = cvs.width;
-    const H   = cvs.height;
-    const dpr = window.devicePixelRatio || 1;
-    const cols = Math.ceil((W / dpr) / BLOCK);
-    const rows = Math.ceil((H / dpr) / BLOCK);
+    const cvs  = gl.domElement;
+    const W    = cvs.width;   // physical px (R3F caps DPR at 2 internally)
+    const H    = cvs.height;
+    // Use clientWidth/Height (CSS px) instead of window.devicePixelRatio so the
+    // grid aligns correctly even when R3F's internal DPR != window.devicePixelRatio.
+    const cssW = cvs.clientWidth  || cvs.offsetWidth  || W;
+    const cssH = cvs.clientHeight || cvs.offsetHeight || H;
+    const dprX = W / cssW;
+    const dprY = H / cssH;
+    const cols = Math.ceil(cssW / BLOCK);
+    const rows = Math.ceil(cssH / BLOCK);
 
     // Leer píxeles del framebuffer de WebGL
-    const glCtx   = gl.getContext() as WebGLRenderingContext;
-    const pixels  = new Uint8Array(W * H * 4);
+    const glCtx  = gl.getContext() as WebGLRenderingContext;
+    const pixels = new Uint8Array(W * H * 4);
     glCtx.readPixels(0, 0, W, H, glCtx.RGBA, glCtx.UNSIGNED_BYTE, pixels);
 
     const mask: boolean[] = [];
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
-        // Centro del bloque en píxeles CSS → píxeles físicos
         const cssPx = c * BLOCK + BLOCK / 2;
         const cssPy = r * BLOCK + BLOCK / 2;
-        const px = Math.min(Math.round(cssPx * dpr), W - 1);
+        const px = Math.min(Math.round(cssPx * dprX), W - 1);
         // WebGL usa Y invertido (bottom-left origin)
-        const py = Math.min(H - Math.round(cssPy * dpr) - 1, H - 1);
+        const py = Math.min(H - Math.round(cssPy * dprY) - 1, H - 1);
         const idx = (py * W + px) * 4;
-        const pR = pixels[idx];
-        const pG = pixels[idx + 1];
-        const pB = pixels[idx + 2];
-        // Fondo = #080808 ≈ (8,8,8). El hoodie (blanco por defecto) es mucho más brillante
+        const pR  = pixels[idx];
+        const pG  = pixels[idx + 1];
+        const pB  = pixels[idx + 2];
         mask.push(pR > 18 || pG > 18 || pB > 18);
       }
     }
@@ -279,6 +282,8 @@ export default function HoodieViewer() {
         onCreated={({ gl }) => {
           const canvas = gl.domElement;
           canvas.style.cursor = "none";
+          // pan-y: vertical swipe scrolls the page; horizontal drag still rotates the model
+          canvas.style.touchAction = "pan-y";
           const observer = new MutationObserver(() => {
             if (canvas.style.cursor !== "none") canvas.style.cursor = "none";
           });
@@ -333,7 +338,7 @@ export default function HoodieViewer() {
           ))}
         </div>
         <div style={{ color: "#ffffff25", fontSize: 10, letterSpacing: 3, textTransform: "uppercase" }}>
-          Arrastrá para rotar
+          Deslizá para rotar
         </div>
       </div>
     </div>
