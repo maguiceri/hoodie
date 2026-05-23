@@ -240,13 +240,21 @@ export default function HoodieViewer() {
   const { progress } = useProgress();
   const [maskData, setMaskData]       = useState<MaskData | null>(null);
   const onCapture = useCallback((d: MaskData) => setMaskData(d), []);
+  const [isMobile, setIsMobile]       = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const active = progress >= 100 && maskData !== null;
 
   return (
     <div
       style={{
-        width: "100%", height: "100vh",
+        width: "100%", height: isMobile ? "65vh" : "100vh",
         background: "#080808",
         position: "relative", overflow: "hidden",
         fontFamily: "'Helvetica Neue', sans-serif",
@@ -312,9 +320,9 @@ export default function HoodieViewer() {
 
       {/* Color selector */}
       <div style={{
-        position: "absolute", bottom: 40, left: "50%",
+        position: "absolute", bottom: isMobile ? 20 : 40, left: "50%",
         transform: "translateX(-50%)",
-        zIndex: 25, display: "flex", flexDirection: "column", alignItems: "center", gap: 14,
+        zIndex: 25, display: "flex", flexDirection: "column", alignItems: "center", gap: isMobile ? 10 : 14,
       }}>
         <div style={{ color: "#ffffff35", fontSize: 10, letterSpacing: 4, textTransform: "uppercase" }}>
           Color
