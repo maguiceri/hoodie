@@ -70,22 +70,28 @@ function CursorGlow() {
   const glowRef = useRef<HTMLDivElement>(null);
   const seenRef = useRef(false);
   const [visible, setVisible] = useState(false);
+  const [isTouch, setIsTouch] = useState(true);
 
   useEffect(() => {
-    const onMove = (e: MouseEvent) => {
-      if (!seenRef.current) { seenRef.current = true; setVisible(true); }
-      const x = e.clientX + "px";
-      const y = e.clientY + "px";
-      if (dotRef.current)  { dotRef.current.style.left  = x; dotRef.current.style.top  = y; }
-      if (glowRef.current) { glowRef.current.style.left = x; glowRef.current.style.top = y; }
-    };
-    window.addEventListener("mousemove", onMove);
-    return () => window.removeEventListener("mousemove", onMove);
+    setIsTouch(window.matchMedia("(pointer: coarse)").matches);
   }, []);
 
+  useEffect(() => {
+    if (isTouch) return;
+    const onMove = (e: MouseEvent) => {
+      if (!seenRef.current) { seenRef.current = true; setVisible(true); }
+      const t = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
+      if (dotRef.current)  dotRef.current.style.transform  = t;
+      if (glowRef.current) glowRef.current.style.transform = t;
+    };
+    window.addEventListener("mousemove", onMove, { passive: true });
+    return () => window.removeEventListener("mousemove", onMove);
+  }, [isTouch]);
+
+  if (isTouch) return null;
+
   const base: React.CSSProperties = {
-    position: "fixed", pointerEvents: "none",
-    transform: "translate(-50%, -50%)",
+    position: "fixed", left: 0, top: 0, pointerEvents: "none",
     opacity: visible ? 1 : 0,
   };
 
